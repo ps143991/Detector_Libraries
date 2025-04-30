@@ -16,7 +16,7 @@
  *                                                                           *
  *---------------------------------------------------------------------------*
  * Comment:                                                                  *
- *                                                                           *   
+ *                                                                           *
  *                                                                           *
  *****************************************************************************/
 
@@ -58,7 +58,7 @@ TZDDPhysics::TZDDPhysics()
       {
 }
 
-  
+
 ///////////////////////////////////////////////////////////////////////////
 void TZDDPhysics::BuildSimplePhysicalEvent() {
   BuildPhysicalEvent();
@@ -67,16 +67,18 @@ void TZDDPhysics::BuildSimplePhysicalEvent() {
 
 
 ///////////////////////////////////////////////////////////////////////////
-void TZDDPhysics::BuildPhysicalEvent() {
-  ClaimReaderData();
+void TZDDPhysics::BuildPhysicalEvent() {  //27a: event building in zdd
+  //std::cout<<"build physical event from ZDD physics running"<<std::endl;
+  ClaimReaderData();  //27b1: starts reading NPRaw_data
   // apply thresholds and calibration
-  PreTreat();
+  PreTreat(); //27c1:
 
   // match energy and time together
-  Match_IC1();
-  // if(IC_Nbr.size() > 0)
-    Match_PL();
-  // Treat_DC();
+  Match_IC2();
+
+  Match_PL();
+  Match_DC();
+  Match_EXO();
 }
 
 
@@ -88,137 +90,172 @@ void TZDDPhysics::ReadConfigurationTS(){
 ///////////////////////////////////////////////////////////////////////////
 void TZDDPhysics::SetRefTS(std::string TSRef_Name, unsigned long long TSRef){
   RefTS = TSRef;
-  RefTS_Name = TSRef_Name; 
+  RefTS_Name = TSRef_Name;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void TZDDPhysics::Treat_DC(){
-}
-///////////////////////////////////////////////////////////////////////////
-void TZDDPhysics::Match_IC(){
-//////////////////////////////// Currently Simply matching if mult = 5, could be improved to treat mult > 5
-  if(m_PreTreatedData->GetZDD_ICMult() == 5){
-    // CHecking that each IC is only encountered once and then sorting them in the right order with the map
-    for(unsigned int i = 0; i < m_PreTreatedData->GetZDD_ICMult(); i++){
-    if(SortIC.find(m_PreTreatedData->GetZDD_ICN(i)) != SortIC.end()){
-      SortIC.clear();
-      break;
-    }
-    SortIC[m_PreTreatedData->GetZDD_ICN(i)] = std::make_pair(m_PreTreatedData->GetZDD_ICE(i),m_PreTreatedData->GetZDD_ICTS(i));
-    }
-    // Adding the IC info to the std::vectors
-    ICSum = 0;
-    for(auto it = SortIC.begin(); it != SortIC.end(); ++it){
-      ICSum+= (it->second).first;
-      // std::cout << "Test " << it->first << " " << it->second.first << std::endl;
-      IC_Nbr.push_back(it->first);
-      IC_E.push_back((it->second).first);
-      IC_TS.push_back((it->second).second);
-    }
-  }
-}
-
-void TZDDPhysics::Match_IC1(){
-//////////////////////////////// Currently Simply matching if mult = 5, could be improved to treat mult > 5
-    // CHecking that each IC is only encountered once and then sorting them in the right order with the map
-    for(unsigned int i = 0; i < m_PreTreatedData->GetZDD_ICMult(); i++){
-    if(SortIC.find(m_PreTreatedData->GetZDD_ICN(i)) == SortIC.end()){
-        SortIC[m_PreTreatedData->GetZDD_ICN(i)] = std::make_pair(m_PreTreatedData->GetZDD_ICE(i),m_PreTreatedData->GetZDD_ICTS(i));
+void TZDDPhysics::Match_DC(){
+    DC_Nbr.clear();
+    DC_E.clear();
+    DC_TS.clear();
+    for(auto it = SortDC.begin(); it != SortDC.end(); ++it){
+      for (auto& data: it->second){
+          DC_Nbr.push_back(it->first);
+          DC_E.push_back(data.first);
+          DC_TS.push_back(data.second);
       }
-    }
-    // Adding the IC info to the std::vectors
+ }
+}
+///////////////////////////////////////////////////////////////////////////
+
+void TZDDPhysics::Match_IC2() {
+    IC_Nbr.clear();
+    IC_E.clear();
+    IC_TS.clear();
+
     ICSum = 0;
-    for(auto it = SortIC.begin(); it != SortIC.end(); ++it){
-    ICSum+= (it->second).first;
-    IC_Nbr.push_back(it->first);
-    IC_E.push_back((it->second).first);
-    IC_TS.push_back((it->second).second);
+    SUMofIC_PS = 0;
+    for (auto it = SortIC2.begin(); it != SortIC2.end(); ++it) {
+        for (auto& data : it->second) { // Iterate over all stored values per IC number
+            ICSum += data.first;
+            IC_Nbr.push_back(it->first);
+            IC_E.push_back(data.first);
+            IC_TS.push_back(data.second);
+        }
     }
 }
 
 void TZDDPhysics::Match_PL(){
- for(unsigned int i = 0; i < m_PreTreatedData->GetZDD_PLMult(); i++){
-   SortPL[m_PreTreatedData->GetZDD_PLN(i)] = std::make_pair(m_PreTreatedData->GetZDD_PLE(i),m_PreTreatedData->GetZDD_PLTS(i));
+    PL_Nbr.clear();
+    PL_E.clear();
+    PL_TS.clear();
+    for(auto it = SortPL.begin(); it != SortPL.end(); ++it){
+      for (auto& data: it->second){
+          PL_Nbr.push_back(it->first);
+          PL_E.push_back(data.first);
+          PL_TS.push_back(data.second);
+      }
  }
- for(auto it = SortPL.begin(); it != SortPL.end(); ++it){
- PL_Nbr.push_back(it->first);
- PL_E.push_back((it->second).first);
- PL_TS.push_back((it->second).second);
+}
+
+void TZDDPhysics::Match_EXO(){
+    EXO_Nbr.clear();
+    EXO_E.clear();
+    EXO_TS.clear();
+    for(auto it = SortEXO.begin(); it != SortEXO.end(); ++it){
+      for (auto& data: it->second){
+          EXO_Nbr.push_back(it->first);
+          EXO_E.push_back(data.first);
+          EXO_TS.push_back(data.second);
+      }
  }
 }
 
 ///////////////////////////////////////////////////////////////////////////
 void TZDDPhysics::PreTreat() {
-  // This method typically applies thresholds and calibrations
-  // Might test for disabled channels for more complex detector
 
   // clear pre-treated object
   ClearPreTreatedData();
-  
-  m_IC_Mult = m_EventData->GetZDD_ICMult();
-  m_PL_Mult = m_EventData->GetZDD_PLMult();
-  m_DC_Mult = m_EventData->GetZDD_DCMult();
-  m_EXO_Mult = m_EventData->GetZDD_EXOMult();
-  
-  for (unsigned int i = 0; i < m_IC_Mult; ++i) {
-    if (m_EventData->GetZDD_ICE(i) > m_IC_E_RAW_Threshold) {
-      
-      // If a TimeStamp reference has been added to perform the matching, prompt is asked
-      if(!RefTS_Name.empty()){
-        
-        std::string TSName = "IC_"+std::to_string(Map_IC[m_EventData->GetZDD_ICN(i)]);
-        TSEvent->AddTimeStamp(TSName,m_EventData->GetZDD_ICTS(i));
-        TSEvent->AddTimeStamp(RefTS_Name,RefTS);
-        
-        if(TSEvent->MatchTS(TSName)){
-          m_PreTreatedData->SetZDDIC(Map_IC[m_EventData->GetZDD_ICN(i)], m_EventData->GetZDD_ICE(i), m_EventData->GetZDD_ICTS(i));
+
+//ICs
+  SortIC2.clear();
+
+  for (int ps = 0; ps<6; ps++){ //0->5 5CHIOs ZDD + 1 CHIO E9
+    for (int i=0; i<m_EventData->GetZDD_IC_Mult(ps); i++){  //[0-PS]th det. : 0,1,2,size(0th det)
+      if (m_EventData->GetZDD_IC_E(ps, i) > m_IC_E_RAW_Threshold) {
+        if(!RefTS_Name.empty()){
+          std::string TSName = "IC_"+std::to_string(ps);
+          TSEvent->AddTimeStamp(TSName,m_EventData->GetZDD_IC_TS(ps,i));
+          TSEvent->AddTimeStamp(RefTS_Name, RefTS);
+
+          if (TSEvent->MatchTS(TSName)){
+                //Trying feeding directly to a map!!
+                SortIC2[ps].push_back(std::make_pair(m_EventData->GetZDD_IC_E(ps,i), m_EventData->GetZDD_IC_TS(ps,i)));
+          }
+          TSEvent->ClearTimeStamps();
         }
-        TSEvent->ClearTimeStamps();
-      }
-      
-      // else, all datas are filled
-      else{
-        m_PreTreatedData->SetZDDIC(Map_IC[m_EventData->GetZDD_ICN(i)], m_EventData->GetZDD_ICE(i), m_EventData->GetZDD_ICTS(i));
-      }
-    }
-  }
-  
-  for (unsigned int i = 0; i < m_PL_Mult; ++i) {
-    if (m_EventData->GetZDD_PLE(i) > m_PL_E_RAW_Threshold) {
-      
-      // If a TimeStamp reference has been added to perform the matching, prompt is asked
-      if(!RefTS_Name.empty()){
-        
-        std::string TSName = "PL_"+std::to_string(m_EventData->GetZDD_PLN(i));
-        TSEvent->AddTimeStamp(TSName,m_EventData->GetZDD_PLTS(i));
-        TSEvent->AddTimeStamp(RefTS_Name,RefTS);
-        // std::cout << TSName << " " << int(m_EventData->GetZDD_PLTS(i) - RefTS) << std::endl;
-        
-        if(TSEvent->MatchTS(TSName)){
-          m_PreTreatedData->SetZDDPL(m_EventData->GetZDD_PLN(i), m_EventData->GetZDD_PLE(i), m_EventData->GetZDD_PLTS(i));
-          // std::cout << TSName << " " << int(m_EventData->GetZDD_PLTS(i) - RefTS) << std::endl;
+        // else, all datas are filled
+        else{
+          //m_PreTreatedData->SetZDDIC(ps, m_EventData->GetZDD_IC_E(ps,i), m_EventData->GetZDD_IC_TS(ps,i));
+          SortIC2[ps].push_back(std::make_pair(m_EventData->GetZDD_IC_E(ps,i), m_EventData->GetZDD_IC_TS(ps,i)));
         }
-        TSEvent->ClearTimeStamps();
-      }
-      
-      // else, all datas are filled
-      else{
-        m_PreTreatedData->SetZDDPL(m_EventData->GetZDD_PLN(i), m_EventData->GetZDD_PLE(i), m_EventData->GetZDD_PLTS(i));
       }
     }
   }
-  
-  for (unsigned int i = 0; i < m_DC_Mult; ++i) {
-    if (m_EventData->GetZDD_DCE(i) > m_DC_E_RAW_Threshold) {
-        m_PreTreatedData->SetZDDDC(m_EventData->GetZDD_DCN(i), m_EventData->GetZDD_DCE(i), m_EventData->GetZDD_DCTS(i));
+
+//PL
+
+  SortPL.clear();
+  for(int ps = 0; ps<10; ps++){
+    for (int i = 0; i<m_EventData->GetZDD_PL_Mult(ps); i++){
+      if (m_EventData->GetZDD_PL_E(ps,i) > m_PL_E_RAW_Threshold){
+        if(!RefTS_Name.empty()){
+          std::string TSName = "PL_"+std::to_string(ps);
+          TSEvent->AddTimeStamp(TSName,m_EventData->GetZDD_PL_TS(ps,i));
+          TSEvent->AddTimeStamp(RefTS_Name, RefTS);
+
+          if (TSEvent->MatchTS(TSName)){
+            //m_PreTreatedData->SetZDDPL(ps,m_EventData->GetZDD_PL_E(ps,i), m_EventData->GetZDD_PL_TS(ps,i));
+            SortPL[ps].push_back(std::make_pair(m_EventData->GetZDD_PL_E(ps,i), m_EventData->GetZDD_PL_TS(ps,i)));
+          }
+          TSEvent->ClearTimeStamps();
+        }
+        // else, all datas are filled
+        else{
+          //m_PreTreatedData->SetZDDPL(ps, m_EventData->GetZDD_PL_E(ps,i), m_EventData->GetZDD_PL_TS(ps,i));
+          SortPL[ps].push_back(std::make_pair(m_EventData->GetZDD_PL_E(ps,i), m_EventData->GetZDD_PL_TS(ps,i)));
+        }
+      }
     }
   }
-  
-  for (unsigned int i = 0; i < m_EXO_Mult; ++i) {
-    if (m_EventData->GetZDD_EXOE(i) > m_EXO_E_RAW_Threshold) {
-        m_PreTreatedData->SetZDDEXO(m_EventData->GetZDD_EXON(i), m_EventData->GetZDD_EXOE(i), m_EventData->GetZDD_EXOTS(i));
+//DCs
+  SortDC.clear();
+  for(int ps = 0; ps<4; ps++){
+    for (int i = 0; i<m_EventData->GetZDD_DC_Mult(ps); i++){
+      if (m_EventData->GetZDD_DC_E(ps,i)>m_DC_E_RAW_Threshold){
+        /*if(!RefTS_Name.empty()){
+          std::string TSName = "DC_"+std::to_string(ps);
+          TSEvent->AddTimeStamp(TSName,m_EventData->GetZDD_DC_TS(ps,i));
+          TSEvent->AddTimeStamp(RefTS_Name, RefTS);
+
+          if (TSEvent->MatchTS(TSName)){
+            m_PreTreatedData->SetZDDDC(ps,m_EventData->GetZDD_DC_E(ps,i), m_EventData->GetZDD_DC_TS(ps,i));
+          }
+          TSEvent->ClearTimeStamps();
+        }
+        // else, all datas are filled
+        else{*/
+          //m_PreTreatedData->SetZDDDC(ps, m_EventData->GetZDD_DC_E(ps,i), m_EventData->GetZDD_DC_TS(ps,i));
+            SortDC[ps].push_back(std::make_pair(m_EventData->GetZDD_DC_E(ps,i), m_EventData->GetZDD_DC_TS(ps,i)));
+        //}
+      }
     }
   }
+
+//EXOZDD
+  SortEXO.clear();
+  for(int ps = 0; ps<4; ps++){
+    for (int i = 0; i<m_EventData->GetZDD_EXO_Mult(ps); i++){
+      if (m_EventData->GetZDD_EXO_E(ps,i)>m_EXO_E_RAW_Threshold){
+        /*if(!RefTS_Name.empty()){
+          std::string TSName = "EXO_"+std::to_string(ps);
+          TSEvent->AddTimeStamp(TSName,m_EventData->GetZDD_EXO_TS(ps,i));
+          TSEvent->AddTimeStamp(RefTS_Name, RefTS);
+
+          if (TSEvent->MatchTS(TSName)){
+            m_PreTreatedData->SetZDDEXO(ps,m_EventData->GetZDD_EXO_E(ps,i), m_EventData->GetZDD_EXO_TS(ps,i));
+          }
+          TSEvent->ClearTimeStamps();
+        }
+        // else, all datas are filled
+        else{*/
+          //m_PreTreatedData->SetZDDEXO(ps, m_EventData->GetZDD_EXO_E(ps,i), m_EventData->GetZDD_EXO_TS(ps,i));
+          SortEXO[ps].push_back(std::make_pair(m_EventData->GetZDD_EXO_E(ps,i), m_EventData->GetZDD_EXO_TS(ps,i)));
+        //}
+      }
+    }
+  }
+
   ClearTSRef();
 }
 
@@ -253,7 +290,7 @@ void TZDDPhysics::ReadAnalysisConfig() {
 
     // search for "header"
     string name = "ConfigZDD";
-    if (LineBuffer.compare(0, name.length(), name) == 0) 
+    if (LineBuffer.compare(0, name.length(), name) == 0)
       ReadingStatus = true;
 
     // loop on tokens and data
@@ -309,7 +346,7 @@ void TZDDPhysics::ReadAnalysisConfig() {
 ///////////////////////////////////////////////////////////////////////////
 void TZDDPhysics::Clear() {
   ICSum = 0;
-  SortIC.clear();
+  SortIC2.clear();
   SortPL.clear();
   IC_Nbr.clear();
   IC_E.clear();
@@ -319,16 +356,17 @@ void TZDDPhysics::Clear() {
   PL_TS.clear();
   DC_DetectorNumber.clear();
   DC_DriftTime.clear();
+
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////////
 void TZDDPhysics::ReadConfiguration(NPL::InputParser parser){
-  
+
   vector<NPL::InputBlock*> blocks = parser.GetAllBlocksWithToken("ZDD");
   if(NPOptionManager::getInstance()->GetVerboseLevel())
-    cout << "//// " << blocks.size() << " detectors found " << endl; 
+    cout << "//// " << blocks.size() << " detectors found " << endl;
 
   vector<string> TokenZDD  = {"R", "Theta"};
 
@@ -342,12 +380,7 @@ void TZDDPhysics::ReadConfiguration(NPL::InputParser parser){
         double Theta = blocks[i]->GetDouble("Theta", "deg");
 
         Add_ZDD(R, Theta);
-    }// Ignoring info of the simu
-    else if (blocks[i]->GetMainValue() == "DC") {}
-    else if (blocks[i]->GetMainValue() == "IC") {}
-    else if (blocks[i]->GetMainValue() == "AC") {}
-    else if (blocks[i]->GetMainValue() == "EntryExit") {}
-    else if (blocks[i]->GetMainValue() == "Plastic") {}
+    }
     else{
       cout << "ERROR: check your input file formatting " << endl;
       exit(1);
@@ -358,8 +391,12 @@ void TZDDPhysics::ReadConfiguration(NPL::InputParser parser){
 
 ///////////////////////////////////////////////////////////////////////////
 void TZDDPhysics::ClaimReaderData() {
+    //std::cout<<"build physical event from TAC physics running::::: claim reader data????"<<std::endl;
+
   if (NPOptionManager::getInstance()->IsReader() == true) {
-    m_EventData = &(**r_ReaderEventData);
+        //std::cout<<"build physical event from TAC physics running::::: claim reader data????  YESSS"<<std::endl;
+
+    m_EventData = &(**r_ReaderEventData); //27b: comes from TZDDPhysicsReader on line 495 of this code m_EventData is the event from raw datat
   }
 }
 
@@ -463,7 +500,7 @@ void TZDDPhysics::InitializeRootOutput() {
 }
 
 void TZDDPhysics::SetTreeReader(TTreeReader* TreeReader) {
-   TZDDPhysicsReader::r_SetTreeReader(TreeReader);
+   TZDDPhysicsReader::r_SetTreeReader(TreeReader);  //27c: reads data from TZDDData means from NPRaw_ files
  }
 
 
@@ -493,4 +530,3 @@ class proxy_ZDD{
 
 proxy_ZDD p_ZDD;
 }
-

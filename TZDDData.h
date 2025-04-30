@@ -36,29 +36,86 @@ class TZDDData : public TObject {
     // to allow multiplicity treatment
 private:
     // IC
-    vector<unsigned int> fZDD_IC_E;
+    vector<unsigned int> fZDD_IC_1_E;
+    vector<unsigned int> fZDD_IC_2_E;
+    vector<unsigned int> fZDD_IC_3_E;
+    vector<unsigned int> fZDD_IC_4_E;
+    vector<unsigned int> fZDD_IC_5_E;
+    vector<unsigned int> fZDD_IC_9_E;
+
+    vector<unsigned long long> fZDD_IC_1_TS;
+    vector<unsigned long long> fZDD_IC_2_TS;
+    vector<unsigned long long> fZDD_IC_3_TS;
+    vector<unsigned long long> fZDD_IC_4_TS;
+    vector<unsigned long long> fZDD_IC_5_TS;
+    vector<unsigned long long> fZDD_IC_9_TS;
+
     vector<unsigned int> fZDD_IC_N;
-    vector<unsigned long long> fZDD_IC_TS;
+    vector<unsigned int> fZDD_IC_E;
+    vector<unsigned int> fZDD_IC_TS;
+
 
     // Plastic
+    vector<unsigned int> fZDD_PL_1_E;
+    vector<unsigned int> fZDD_PL_2_E;
+    vector<unsigned int> fZDD_PL_3_E;
+    vector<unsigned int> fZDD_PL_4_E;
+    vector<unsigned int> fZDD_PL_5_E;
+    vector<unsigned int> fZDD_PL_6_E;
+    vector<unsigned int> fZDD_PL_7_E;
+    vector<unsigned int> fZDD_PL_8_E;
+    vector<unsigned int> fZDD_PL_9_E;
+    vector<unsigned int> fZDD_PL_10_E;
+
+    vector<unsigned long long> fZDD_PL_1_TS;
+    vector<unsigned long long> fZDD_PL_2_TS;
+    vector<unsigned long long> fZDD_PL_3_TS;
+    vector<unsigned long long> fZDD_PL_4_TS;
+    vector<unsigned long long> fZDD_PL_5_TS;
+    vector<unsigned long long> fZDD_PL_6_TS;
+    vector<unsigned long long> fZDD_PL_7_TS;
+    vector<unsigned long long> fZDD_PL_8_TS;
+    vector<unsigned long long> fZDD_PL_9_TS;
+    vector<unsigned long long> fZDD_PL_10_TS;
+
     vector<unsigned int> fZDD_PL_E;
     vector<unsigned int> fZDD_PL_N;
     vector<unsigned long long> fZDD_PL_TS;
 
     // DC
+    vector<unsigned int> fZDD_DC_1_E;
+    vector<unsigned int> fZDD_DC_2_E;
+    vector<unsigned int> fZDD_DC_3_E;
+    vector<unsigned int> fZDD_DC_4_E;
+
+    vector<unsigned long long> fZDD_DC_1_TS;
+    vector<unsigned long long> fZDD_DC_2_TS;
+    vector<unsigned long long> fZDD_DC_3_TS;
+    vector<unsigned long long> fZDD_DC_4_TS;
+
     vector<unsigned int> fZDD_DC_E;
     vector<unsigned int> fZDD_DC_N;
     vector<unsigned long long> fZDD_DC_TS;
+
+    // EXOZDD
+    vector<unsigned int> fZDD_EXO_1_E;
+    vector<unsigned int> fZDD_EXO_2_E;
+    vector<unsigned int> fZDD_EXO_3_E;
+    vector<unsigned int> fZDD_EXO_4_E;
+
+    vector<unsigned long long> fZDD_EXO_1_TS;
+    vector<unsigned long long> fZDD_EXO_2_TS;
+    vector<unsigned long long> fZDD_EXO_3_TS;
+    vector<unsigned long long> fZDD_EXO_4_TS;
+
+    vector<unsigned int> fZDD_EXO_E;
+    vector<unsigned int> fZDD_EXO_N;
+    vector<unsigned long long> fZDD_EXO_TS;
 
     // DriftTime in DC
     vector<UShort_t> fZDD_Drift_DetectorNbr;
     vector<Double_t> fZDD_DriftTime;
     vector<Double_t> fZDD_X;
-
-    // EXOZDD
-    vector<unsigned int> fZDD_EXO_E;
-    vector<unsigned int> fZDD_EXO_N;
-    vector<unsigned long long> fZDD_EXO_TS;
 
     //////////////////////////////////////////////////////////////
     // Constructor and destructor
@@ -81,60 +138,151 @@ public:
 public:
     //////////////////////    SETTERS    ////////////////////////
     // Energy
-    inline void SetZDDIC(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp) {
-        fZDD_IC_E.push_back(Energy);
-        fZDD_IC_N.push_back(DetNumb);
-        fZDD_IC_TS.push_back(TimeStamp);
-    }; //!
-    inline void SetZDDPL(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp) {
-        fZDD_PL_E.push_back(Energy);
-        fZDD_PL_N.push_back(DetNumb);
-        fZDD_PL_TS.push_back(TimeStamp);
-    }; //!
-    inline void SetZDDDC(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp) {
-        fZDD_DC_E.push_back(Energy);
-        fZDD_DC_N.push_back(DetNumb);
-        fZDD_DC_TS.push_back(TimeStamp);
-    }; //!
+    void SetZDDIC(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp);
+
+    void SetZDDPL(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp);
+
+    void SetZDDDC(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp);
+
+    void SetZDDEXO(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp);
+
     inline void SetDrift(const UShort_t& DetNbr, const Double_t& DriftTime, const Double_t& X) {
         fZDD_Drift_DetectorNbr.push_back(DetNbr);
         fZDD_DriftTime.push_back(DriftTime);
         fZDD_X.push_back(X);
     }; //!
-    inline void SetZDDEXO(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp) {
-        fZDD_EXO_E.push_back(Energy);
-        fZDD_EXO_N.push_back(DetNumb);
-        fZDD_EXO_TS.push_back(TimeStamp);
-    }; //!
+
+
 
     //////////////////////    GETTERS    ////////////////////////
-    inline unsigned int	GetZDD_ICMult()		                const {return fZDD_IC_E.size();}
-    inline unsigned int GetZDD_ICE(const unsigned int& i) const { return fZDD_IC_E[i]; }
-    inline unsigned int GetZDD_ICN(const unsigned int& i) const { return fZDD_IC_N[i]; }
-    inline unsigned long long GetZDD_ICTS(const unsigned int& i) const { return fZDD_IC_TS[i]; }
+    //ICs
+    inline unsigned int	GetZDD_IC_Mult(int i) const {
+        if (i==0){return fZDD_IC_1_E.size();}
+        if (i==1){return fZDD_IC_2_E.size();}
+        if (i==2){return fZDD_IC_3_E.size();}
+        if (i==3){return fZDD_IC_4_E.size();}
+        if (i==4){return fZDD_IC_5_E.size();}
+        if (i==5){return fZDD_IC_9_E.size();}
+        return 0;
+    };
+    inline unsigned int GetZDD_IC_E(int ps, int i) const {
+        if (ps==0){return fZDD_IC_1_E[i];}
+        if (ps==1){return fZDD_IC_2_E[i];}
+        if (ps==2){return fZDD_IC_3_E[i];}
+        if (ps==3){return fZDD_IC_4_E[i];}
+        if (ps==4){return fZDD_IC_5_E[i];}
+        if (ps==5){return fZDD_IC_9_E[i];}
+        return 0;
+    };
+    inline unsigned long long GetZDD_IC_TS(int ps, int i) const {
+        if (ps==0){return fZDD_IC_1_TS[i];}
+        if (ps==1){return fZDD_IC_2_TS[i];}
+        if (ps==2){return fZDD_IC_3_TS[i];}
+        if (ps==3){return fZDD_IC_4_TS[i];}
+        if (ps==4){return fZDD_IC_5_TS[i];}
+        if (ps==5){return fZDD_IC_9_TS[i];}
+        return 0;
+    };
+    inline unsigned int GetZDD_IC_N(const unsigned int& i) const { return fZDD_IC_N[i]; }
 
-    inline unsigned int	GetZDD_PLMult()		                const {return fZDD_PL_E.size();}
-    inline unsigned int GetZDD_PLE(const unsigned int& i) const { return fZDD_PL_E[i]; }
-    inline unsigned int GetZDD_PLN(const unsigned int& i) const { return fZDD_PL_N[i]; }
-    inline unsigned long long GetZDD_PLTS(const unsigned int& i) const { return fZDD_PL_TS[i]; }
+    //PLs
+    inline unsigned int	GetZDD_PL_Mult(int i) const {
+        if (i==0){return fZDD_PL_1_E.size();}
+        if (i==1){return fZDD_PL_2_E.size();}
+        if (i==2){return fZDD_PL_3_E.size();}
+        if (i==3){return fZDD_PL_4_E.size();}
+        if (i==4){return fZDD_PL_5_E.size();}
+        if (i==5){return fZDD_PL_6_E.size();}
+        if (i==6){return fZDD_PL_7_E.size();}
+        if (i==7){return fZDD_PL_8_E.size();}
+        if (i==8){return fZDD_PL_9_E.size();}
+        if (i==9){return fZDD_PL_10_E.size();}
+        return 0;
+    };
+    inline unsigned int GetZDD_PL_E(int ps, int i) const {
+        if (ps==0){return fZDD_PL_1_E[i];}
+        if (ps==1){return fZDD_PL_2_E[i];}
+        if (ps==2){return fZDD_PL_3_E[i];}
+        if (ps==3){return fZDD_PL_4_E[i];}
+        if (ps==4){return fZDD_PL_5_E[i];}
+        if (ps==5){return fZDD_PL_6_E[i];}
+        if (ps==6){return fZDD_PL_7_E[i];}
+        if (ps==7){return fZDD_PL_8_E[i];}
+        if (ps==8){return fZDD_PL_9_E[i];}
+        if (ps==9){return fZDD_PL_10_E[i];}
+        return 0;
+    };
+    inline unsigned long long GetZDD_PL_TS(int ps, int i) const {
+        if (ps==0){return fZDD_PL_1_TS[i];}
+        if (ps==1){return fZDD_PL_2_TS[i];}
+        if (ps==2){return fZDD_PL_3_TS[i];}
+        if (ps==3){return fZDD_PL_4_TS[i];}
+        if (ps==4){return fZDD_PL_5_TS[i];}
+        if (ps==5){return fZDD_PL_6_TS[i];}
+        if (ps==6){return fZDD_PL_7_TS[i];}
+        if (ps==7){return fZDD_PL_8_TS[i];}
+        if (ps==8){return fZDD_PL_9_TS[i];}
+        if (ps==9){return fZDD_PL_10_TS[i];}
+        return 0;
+    };
+    inline unsigned int GetZDD_PL_N(const unsigned int& i) const { return fZDD_PL_N[i]; }
 
-    inline unsigned int	GetZDD_DCMult()		                const {return fZDD_DC_E.size();}
-    inline unsigned int GetZDD_DCE(const unsigned int& i) const { return fZDD_DC_E[i]; }
-    inline unsigned int GetZDD_DCN(const unsigned int& i) const { return fZDD_DC_N[i]; }
-    inline unsigned long long GetZDD_DCTS(const unsigned int& i) const { return fZDD_DC_TS[i]; }
+    //DCs
+        inline unsigned int	GetZDD_DC_Mult(int i) const {
+        if (i==0){return fZDD_DC_1_E.size();}
+        if (i==1){return fZDD_DC_2_E.size();}
+        if (i==2){return fZDD_DC_3_E.size();}
+        if (i==3){return fZDD_DC_4_E.size();}
+        return 0;
+    };
+    inline unsigned int GetZDD_DC_E(int ps, int i) const {
+        if (ps==0){return fZDD_DC_1_E[i];}
+        if (ps==1){return fZDD_DC_2_E[i];}
+        if (ps==2){return fZDD_DC_3_E[i];}
+        if (ps==3){return fZDD_DC_4_E[i];}
+        return 0;
+    };
+    inline unsigned long long GetZDD_DC_TS(int ps, int i) const {
+        if (ps==0){return fZDD_DC_1_TS[i];}
+        if (ps==1){return fZDD_DC_2_TS[i];}
+        if (ps==2){return fZDD_DC_3_TS[i];}
+        if (ps==3){return fZDD_DC_4_TS[i];}
+        return 0;
+    };
+    inline unsigned int GetZDD_DC_N(const unsigned int& i) const { return fZDD_DC_N[i]; }
 
-    inline UShort_t GetMultDrift() const { return fZDD_Drift_DetectorNbr.size(); }
-    inline UShort_t GetDrift_DetectorNbr(const unsigned int& i) const { return fZDD_Drift_DetectorNbr[i];}
-    inline Double_t Get_DriftTime(const unsigned int& i) const { return fZDD_DriftTime[i]; }
+    //EXOs
+        inline unsigned int	GetZDD_EXO_Mult(int i) const {
+        if (i==0){return fZDD_EXO_1_E.size();}
+        if (i==1){return fZDD_EXO_2_E.size();}
+        if (i==2){return fZDD_EXO_3_E.size();}
+        if (i==3){return fZDD_EXO_4_E.size();}
+        return 0;
+    };
+    inline unsigned int GetZDD_EXO_E(int ps, int i) const {
+        if (ps==0){return fZDD_EXO_1_E[i];}
+        if (ps==1){return fZDD_EXO_2_E[i];}
+        if (ps==2){return fZDD_EXO_3_E[i];}
+        if (ps==3){return fZDD_EXO_4_E[i];}
+        return 0;
+    };
+    inline unsigned long long GetZDD_EXO_TS(int ps, int i) const {
+        if (ps==0){return fZDD_EXO_1_TS[i];}
+        if (ps==1){return fZDD_EXO_2_TS[i];}
+        if (ps==2){return fZDD_EXO_3_TS[i];}
+        if (ps==3){return fZDD_EXO_4_TS[i];}
+        return 0;
+    };
+    inline unsigned int GetZDD_EXO_N(const unsigned int& i) const { return fZDD_EXO_N[i]; }
 
-    inline unsigned int	GetZDD_EXOMult()		                const {return fZDD_EXO_E.size();}
-    inline unsigned int GetZDD_EXOE(const unsigned int& i) const { return fZDD_EXO_E[i]; }
-    inline unsigned int GetZDD_EXON(const unsigned int& i) const { return fZDD_EXO_N[i]; }
-    inline unsigned long long GetZDD_EXOTS(const unsigned int& i) const { return fZDD_EXO_TS[i]; }
+
+    // inline UShort_t GetMultDrift() const { return fZDD_Drift_DetectorNbr.size(); }
+    // inline UShort_t GetDrift_DetectorNbr(const unsigned int& i) const { return fZDD_Drift_DetectorNbr[i];}
+    // inline Double_t Get_DriftTime(const unsigned int& i) const { return fZDD_DriftTime[i]; }
 
     //////////////////////////////////////////////////////////////
     // Required for ROOT dictionnary
-    ClassDef(TZDDData, 1) // ZDDData structure
+    ClassDef(TZDDData, 2) // ZDDData structure
 };
 
 #endif

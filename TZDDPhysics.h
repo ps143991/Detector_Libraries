@@ -18,11 +18,11 @@
  *                                                                           *
  *---------------------------------------------------------------------------*
  * Comment:                                                                  *
- *                                                                           *   
+ *                                                                           *
  *                                                                           *
  *****************************************************************************/
 
-// C++ headers 
+// C++ headers
 #include <vector>
 #include <map>
 #include <string>
@@ -57,8 +57,8 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
 
   //////////////////////////////////////////////////////////////
   // Inherited from TObject and overriden to avoid warnings
-  public: 
-    void Clear();   
+  public:
+    void Clear();
     void Clear(const Option_t*) {};
 
 
@@ -66,22 +66,33 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
   // data obtained after BuildPhysicalEvent() and stored in
   // output ROOT file
   public:
+
+    //int GetcountPS(){return countPS;}
+    //void INCcountPS(){countPS++;}
     vector<int>      IC_Nbr;
-    vector<double>   IC_E;
+    vector<unsigned int>   IC_E;
     vector<unsigned long long>   IC_TS;
     double ICSum;
-
+    double SUMofIC_PS;
     vector<int>      PL_Nbr;
-    vector<double>   PL_E;
+    vector<unsigned int>   PL_E;
     vector<unsigned long long>   PL_TS;
+
+    vector<int> DC_Nbr;
+    vector<unsigned int> DC_E;
+    vector<unsigned long long> DC_TS;
+
+    vector<int> EXO_Nbr;
+    vector<unsigned int> EXO_E;
+    vector<unsigned long long> EXO_TS;
 
     vector<int>      DC_DetectorNumber;
     vector<double>   DC_DriftTime;
-  
+
   /// A usefull method to bundle all operation to add a detector
-  void AddDetector(TVector3 POS, string shape); 
-  void AddDetector(double R, double Theta, double Phi, string shape); 
-  
+  void AddDetector(TVector3 POS, string shape);
+  void AddDetector(double R, double Theta, double Phi, string shape);
+
   //////////////////////////////////////////////////////////////
   // methods inherited from the VDetector ABC class
   public:
@@ -91,7 +102,7 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
     // add parameters to the CalibrationManger
     void AddParameterToCalibrationManager();
 
-    // method called event by event, aiming at extracting the 
+    // method called event by event, aiming at extracting the
     // physical information from detector
     void BuildPhysicalEvent();
 
@@ -103,12 +114,12 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
     void BuildOnlinePhysicalEvent()  {BuildPhysicalEvent();};
 
     // activate raw data object and branches from input TChain
-    // in this method mother branches (Detector) AND daughter leaves 
+    // in this method mother branches (Detector) AND daughter leaves
     // (fDetector_parameter) have to be activated
     void InitializeRootInputRaw();
 
     // activate physics data object and branches from input TChain
-    // in this method mother branches (Detector) AND daughter leaves 
+    // in this method mother branches (Detector) AND daughter leaves
     // (fDetector_parameter) have to be activated
     void InitializeRootInputPhysics();
 
@@ -116,18 +127,18 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
     void InitializeRootOutput();
 
     // clear the raw and physical data objects event by event
-    void ClearEventPhysics() {Clear();}      
-    void ClearEventData()    {m_EventData->Clear();}   
+    void ClearEventPhysics() {Clear();}
+    void ClearEventData()    {m_EventData->Clear();}
 
     // methods related to the TZDDSpectra class
-    // instantiate the TZDDSpectra class and 
+    // instantiate the TZDDSpectra class and
     // declare list of histograms
     void InitSpectra();
 
     // fill the spectra
     void FillSpectra();
 
-    // used for Online mainly, sanity check for histograms and 
+    // used for Online mainly, sanity check for histograms and
     // change their color if issues are found, for example
     void CheckSpectra();
 
@@ -136,10 +147,10 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
 
     // write spectra to ROOT output file
     void WriteSpectra();
-  
+
     void SetTreeReader(TTreeReader* TreeReader);
 
-    void ReadConfigurationTS(); 
+    void ReadConfigurationTS();
   //////////////////////////////////////////////////////////////
   // specific methods to ZDD array
   public:
@@ -147,17 +158,19 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
     void PreTreat();
 
 
-    void Treat_DC();
-    // Matching IC
-    void Match_IC();
-    void Match_IC1();
-    
+    void Match_DC();
+
+    void Match_IC2();
+
+    void Match_EXO();
+
     void Match_PL();
+
     // bool CheckGoodEvent();
 
-    // PreTreating Energy for IC and Plastic 
+    // PreTreating Energy for IC and Plastic
     void PreTreatEnergy(std::string Detector, CalibrationManager* Cal);
-    
+
     // Same for time
     void PreTreatTime(std::string Detector, CalibrationManager* Cal);
 
@@ -169,7 +182,7 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
     // read the user configuration file. If no file is found, load standard one
     void ReadAnalysisConfig();
 
-    // give and external TZDDData object to TZDDPhysics. 
+    // give and external TZDDData object to TZDDPhysics.
     // needed for online analysis for example
     void SetRawDataPointer(TZDDData* rawDataPointer) {m_EventData = rawDataPointer;}
 
@@ -207,13 +220,11 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
     double m_E_Threshold;     //!
     double m_R;//!
     double m_Theta;//!
-    unsigned int m_IC_Mult; //!
-    unsigned int m_PL_Mult; //!
-    unsigned int m_DC_Mult; //!
-    unsigned int m_EXO_Mult; //!
     std::map<unsigned int, unsigned int> Map_IC;//!
-    std::map<unsigned int,std::pair<unsigned int, unsigned long long>> SortIC;//!
-    std::map<unsigned int,std::pair<unsigned int, unsigned long long>> SortPL;//!
+    std::map<unsigned int,std::vector<std::pair<unsigned int, unsigned long long>>> SortPL;//!
+    std::map<unsigned int,std::vector<std::pair<unsigned int, long long unsigned int>>> SortIC2;
+    std::map<unsigned int,std::vector<std::pair<unsigned int, long long unsigned int>>> SortDC;//!
+    std::map<unsigned int,std::vector<std::pair<unsigned int, long long unsigned int>>> SortEXO;//!
 
   private:
     int m_NumberOfDetectors;  //!
@@ -231,13 +242,13 @@ class TZDDPhysics : public TObject, public NPL::VDetector, public TZDDPhysicsRea
 
   // spectra getter
   public:
-    map<string, TH1*>   GetSpectra(); 
+    map<string, TH1*>   GetSpectra();
 
   // Static constructor to be passed to the Detector Factory
   public:
     static NPL::VDetector* Construct();
     static NPL::VTreeReader* ConstructReader();
 
-    ClassDef(TZDDPhysics,1)  // ZDDPhysics structure
+    ClassDef(TZDDPhysics,3)  // ZDDPhysics structure
 };
 #endif
