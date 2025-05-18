@@ -61,6 +61,7 @@ private:
   std::vector<unsigned int>       fZDD_EXO_E;
   std::vector<unsigned int>       fZDD_EXO_N;
   std::vector<unsigned long long> fZDD_EXO_TS;
+  std::vector<int fZDD_EXO_Time;
 
   //////////////////////////////////////////////////////////////
   // Getters and Setters
@@ -107,6 +108,7 @@ inline void SetZDDDC(const unsigned int& DetNumb, const unsigned int& Energy, co
     fZDD_EXO_E.push_back(Energy);
     fZDD_EXO_N.push_back(DetNumb);
     fZDD_EXO_TS.push_back(TimeStamp);
+    fZDD_EXO_Time.push_back(Time);
   }; //!
 
   //////////////////////    GETTERS    ////////////////////////
@@ -184,6 +186,9 @@ inline void SetZDDDC(const unsigned int& DetNumb, const unsigned int& Energy, co
 
   inline unsigned long long GetZDD_EXOTS(const unsigned int& i) const {
     return fZDD_EXO_TS[i];
+  }
+  inline int GetZDD_EXOTime(const unsigned int& i) const {
+    return fZDD_EXO_Time[i];
   }
 }; // end zdddata
 } // namespace zdd

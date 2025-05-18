@@ -123,7 +123,7 @@ void ZddDetector::TreatFrame(void* commonframe) {
     //i++;
     //std::cout << " DC " << i <<std::endl;
   } else if (Type == "EXO") {
-    m_RawData->SetZDDEXO(Channel, E, TS);
+    m_RawData->SetZDDEXO(Channel, E, TS, Time);
     //std::cout << " EX ";
   }
 
@@ -287,7 +287,7 @@ void ZddDetector::PreTreat() {
     // if (m_RawData->GetZDD_EXOE(i) > m_EXO_E_RAW_Threshold) {
     // std::cout << fZDDEXO_E(i) << std::endl;
     m_CalData->SetZDDEXO(m_RawData->GetZDD_EXON(i), fZDDEXO_E(i),
-        m_RawData->GetZDD_EXOTS(i));
+        m_RawData->GetZDD_EXOTS(i), m_RawData->GetZDD_EXOTime(i));
     // }
   }
   

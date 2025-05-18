@@ -69,6 +69,8 @@ ZddSpectra::ZddSpectra() {
           4, 0, 4, 2000, -1000, 1000);
     m_raw_hist["drift_dist"] = new TH2F("drift_dist", "drift_length",
       4, 0, 4, 2000, -1000, 1000);
+     
+    m_raw_hist["ZDD_EXO_TDC"] = new TH2F("exo_tdc","exo_TDC",4,0,4,1000,0,10000);
     
     }
   /*
@@ -361,8 +363,10 @@ void ZddSpectra::FillRaw() {
 
   auto size_EXO =  m_RawData->GetZDD_EXOMult();
   for (unsigned int i = 0; i < size_EXO; i++) {
-    if(m_RawData->GetZDD_EXOE(i)>0)
+    if(m_RawData->GetZDD_EXOE(i)>0){
       m_raw_hist["ZDD_EXO"]->Fill(m_RawData->GetZDD_EXON(i), m_RawData->GetZDD_EXOE(i));
+      m_raw_hist["ZDD_EXO_TDC"]->Fill(m_RawData->GetZDD_EXON(i), m_RawData->GetZDD_EXOTime(i));	//TDC: Time spectra
+      }
   }
 }
 

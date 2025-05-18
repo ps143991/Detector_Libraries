@@ -48,6 +48,7 @@ void zdd::ZddData::Clear() {
   fZDD_EXO_E.clear();
   fZDD_EXO_N.clear();
   fZDD_EXO_TS.clear();
+  fZDD_EXO_Time.clear();
 }
 
 /*void zdd::ZddData::SetZDDDC(const unsigned int& DetNumb, const unsigned int& Energy, const unsigned long long& TimeStamp) {
